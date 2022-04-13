@@ -16,33 +16,33 @@
             <form v-if="!allDone">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="text" class="form-control" id="email" v-model="email">
+                    <input type="text" class="form-control" id="email" v-model.trim="user.email">
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone</label>
-                    <input type="text" class="form-control" id="phone" v-model="phone">
+                    <input type="text" class="form-control" id="phone" v-model.trim="user.phone">
                 </div>
                 <div class="form-group">
                     <label for="fn">First Name</label>
-                    <input type="text" class="form-control" id="fn" v-model="firstName">
+                    <input type="text" class="form-control" id="fn" v-model.trim="user.firstName">
                 </div>
                 <div class="form-group">
                     <label for="ln">Last Name</label>
-                    <input type="text" class="form-control" id="ln" v-model="lastName">
+                    <input type="text" class="form-control" id="ln" v-model.trim="user.lastName">
                 </div>
-                ...
+                <hr>
                 <div class="form-group">
                     <label>Guests</label>
                     <input type="button" class="btn btn-primary" value="+" @click="addGuest">
                 </div>
 
-                <div class="form-group" v-for="(guest, i) in guests" :key="i">
-                    <label :for="'guest'+i" @dblclick="delGuest(i)">guest #{{ i }}</label>
-                    <input type="text" class="form-control" :id="'guest'+i" v-model="guests[i]">
+                <div class="form-group" v-for="(guest, i) in guests">
+                    <label :for="'guest'+i" @dblclick="delGuest(i)">guest #{{ i+1 }}</label>
+                    <input type="text" class="form-control" :id="'guest'+i" v-model="guest.name">
                 </div>
 
                 <hr>
-                <button class="btn btn-success" :disabled="validate" @click="allDoneClick">Send Data</button>
+                <button class="btn btn-success" :disabled="!validate" @click="allDoneClick">Send Data</button>
             </form>
 
             <div v-else>
@@ -50,11 +50,11 @@
                 <table class="table table-bordered">
                     <tr>
                         <td>Email</td>
-                        <td>{{ email }}</td>
+                        <td>{{ user.email }}</td>
                     </tr>
                     <tr>
                         <td>Phone</td>
-                        <td>{{ phone }}</td>
+                        <td>{{ user.phone }}</td>
                     </tr>
                     <tr>
                         <td>Full Name</td>
@@ -64,9 +64,9 @@
                         <td>Guests</td>
                         <td>
                             <table>
-                                <tr v-for="(guest, i) in guests" :key="i">
-                                    <td v-if="guest!=''">
-                                        guest{{ i }} {{ guest }}
+                                <tr v-for="(guest, i) in guests">
+                                    <td>
+                                        guest #{{ i+1 }} {{ guest.name }}
                                     </td>
                                 </tr>
                             </table>
@@ -80,40 +80,44 @@
     <script>
         let app = Vue.createApp({
             data: () => ({
-                email: '',
-                phone: '',
-                firstName: '',
-                lastName: '',
+                user: {
+                    email: '',
+                    phone: '',
+                    firstName: '',
+                    lastName: '',
+                },
                 guests: [],
                 allDone: false
             }),
             computed: {
                 getFullName() {
-                    return this.firstName + ' ' + this.lastName
+                    // return this.user.firstName + ' ' + this.user.lastName
+                    return `${this.user.firstName} ${this.user.lastName}`
                 },
                 validate() {
-                    // console.log('validate')
-                    if ((this.email != '') && (this.phone != '') && (this.firstName != '') && (this.lastName != '')) {
+                    /*
+                    if ((this.user.email != '') && (this.user.phone != '') && (this.user.firstName != '') && (this.user.lastName != '')) {
                         return false
                     } else {
                         return true
                     }
+                    */
+                    return Object.values(this.user).every(val => val !== '')
                 }
             },
             methods: {
                 allDoneClick() {
+                    this.guests = this.guests.filter(guest => guest.name != '')
                     this.allDone = true
                 },
                 addGuest() {
-                    this.guests.push('')
+                    this.guests.push({
+                        name: ''
+                    })
                 },
                 delGuest(i) {
-                    this.guests.splice(i, i)
+                    this.guests.splice(i, 1)
                 }
-            },
-
-            watch: {
-
             }
         })
 
