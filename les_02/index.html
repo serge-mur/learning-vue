@@ -21,8 +21,8 @@
 <body>
     <div class="wrapper">
         <div class="sample">
-            <form>
-                <div class="content alert alert-info" ref="scrollElement" @scroll="ScrollEnd">
+            <form @submit.prevent="formDone = true" v-if="!formDone">
+                <div class="content alert alert-info" @scroll="onScroll">
                     <p>This text no one reads. This text no one reads. This text no one reads.</p>
                     <p>This text no one reads. This text no one reads. This text no one reads.</p>
                     <p>This text no one reads. This text no one reads. This text no one reads.</p>
@@ -45,10 +45,10 @@
                     <p>This text no one reads. This text no one reads. This text no one reads.</p>
                 </div>
 
-                <div v-if="isScrollEnd">
+                <template v-if="scrollDone">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" v-model="agreeAll">Agree All
+                            <input class="form-check-input" type="checkbox" v-model="agree">Agree All
                         </label>
                     </div>
                     <div class="form-check">
@@ -57,32 +57,40 @@
                         </label>
                     </div>
 
-                    <div :class="{'d-none': !getSpam}">
+                    <template v-if="getSpam">
                         <div class="form-check form-check-inline">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="radio" value="email" v-model="radioChange">Email
+                                <input class="form-check-input" type="radio" value="email" v-model="spamType">Email
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="radio" value="phone" v-model="radioChange">Phone
+                                <input class="form-check-input" type="radio" value="phone" v-model="spamType">Phone
                             </label>
                         </div>
-                    </div>
+                    </template>
 
-                    <hr>
+                <hr>
 
-                    <button class="btn btn-primary" :disabled="!agreeAll">
+                <button class="btn btn-primary" :disabled="!agree">
                         Send Data
                     </button>
-                </div>
+                </template>
 
             </form>
-            <div>
+            <div v-else>
                 <table class="table table-bordered">
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td>Agree All</td>
+                        <td>{{ agree ? 'Yes': 'No' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Get Spam</td>
+                        <td>{{ getSpam ? 'Yes': 'No' }}</td>
+                    </tr>
+                    <tr v-if="getSpam">
+                        <td>SpamType</td>
+                        <td>{{ spamType }}</td>
                     </tr>
                 </table>
             </div>
@@ -91,28 +99,20 @@
     <script>
         Vue.createApp({
             data: () => ({
-                isScrollEnd: false,
-                agreeAll: false,
+                formDone: false,
+                scrollDone: false,
+                agree: false,
                 getSpam: false,
-                radioChange: ''
+                spamType: 'email'
 
             }),
-            computed: {
-
-            },
             methods: {
-                ScrollEnd() {
-                    let element = this.$refs.scrollElement
-                    if (element.offsetHeight + element.scrollTop >= element.scrollHeight) {
-                        this.isScrollEnd = true
+                onScroll(e) {
+                    let div = e.target
+                    if (div.offsetHeight + div.scrollTop >= div.scrollHeight) {
+                        this.scrollDone = true
                     }
-                },
-                checkBoxChange() {
-
                 }
-            },
-            mounted() {
-
             }
 
         }).mount('.sample');
