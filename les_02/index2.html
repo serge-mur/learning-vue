@@ -24,14 +24,20 @@
                     <div class="form-group">
                         <label>
                             {{ el.name }}
-                            <i class="fa-solid" :class="{'fa-circle-exclamation': el.value!=''}"></i>
+                            <span
+                                v-if="el.activated"
+                                class="fa"
+                                :class="el.valid ? 'fa-circle-check text-success': 'fa-circle-check text-danger'"
+                                >
+                            </span>
                         </label>
-                        <input type="text" class="form-control" v-model="el.value" :pattern="el.pattern" :title="el.pattern" @input="validatePattern">
+                        <input type="text" class="form-control" :pattern="el.pattern" :title="el.pattern" :value="el.value" @input="onInput($event.target.value, i)">
                     </div>
                 </div>
                 <button class="btn btn-primary">
                   Send Data
               </button>
+                <pre> {{ info }}</pre>
             </form>
             <div v-else>
                 <table class="table table-bordered">
@@ -81,14 +87,18 @@
                 }
             },
             methods: {
-                validatePattern(e) {
-                    // let el = e.target
-                    // let pattern = el.getAttribute("pattern");
-                    // let str = String(el.value)
-                    // let res = pattern.test(str)
-                    // console.dir(res)
-
+                onInput(value, i) {
+                    let field = this.info[i]
+                    field.value = value
+                    field.activated = true
+                    field.valid = field.pattern.test(field.value)
                 }
+            },
+            created() {
+                return this.info.forEach(field => {
+                    field.activated = false
+                    field.valid = false
+                })
             }
 
         }).mount('.sample');
