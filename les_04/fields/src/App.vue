@@ -2,9 +2,12 @@
 
         <div class="sample">
             <form v-if="!formSubmit" @submit.prevent="formSubmit = true">
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" :style="{width: progressWidth}"></div>
-                </div>
+
+                 <app-progress
+                 :progressWidth="progressWidth">
+                 
+                 </app-progress>   
+
 
                 <app-field
                   v-for="(field,i) in info"
@@ -37,11 +40,13 @@
 <script>
 import 'bootstrap/dist/css/bootstrap.min.css'
 import AppField from '@/components/AppField.vue'
+import AppProgress from '@/components/AppProgress.vue'
 
 export default {
   name: 'App',
   components: {
-    AppField
+    AppField,
+    AppProgress
   },
   data: () => ({
     info: [{
